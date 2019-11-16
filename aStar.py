@@ -1,6 +1,24 @@
 import math
 
 # use a hash table for the closed list and the cache, the key will be x + sqrt(y) from the position
+# use level to determine the nodes position in the array cache
+
+
+class HashTable:
+
+    def __init__(self):
+        self.ht = {}
+
+    def add(self, node):
+        self.ht[node.position.xVal + math.sqrt(node.position.yVal)] = node
+
+    def hasKey(self, node):
+        try:
+            return self.ht[node.position.xVal + math.sqrt(node.position.yVal)]
+        except KeyError:
+            return None
+
+
 
 class PriorityQueue(object):
     def __init__(self):
