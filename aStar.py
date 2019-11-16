@@ -1,3 +1,7 @@
+import math
+
+# use a hash table for the closed list and the cache, the key will be x + sqrt(y) from the position
+
 class PriorityQueue(object):
     def __init__(self):
         self.queue = []
@@ -31,19 +35,17 @@ class PriorityQueue(object):
             exit()
 
 class grid():
-    global yUpperBound, yLowerBound, xUpperBound, xLowerBound
     yUpperBound = 10
     yLowerBound = 0
     xUpperBound = 10
     xLowerBound = 0
 
-    def positionState(self, position):
-        
-
+    def isBarrier(self, position):
+        asdf = 1
     def withinBounds(self, position):
-        if position.xVal > xUpperBound or position.yVal > yUpperBound:
+        if position.xVal > self.xUpperBound or position.yVal > self.yUpperBound:
             return False
-        if position.xVal < xLowerBound or position.yVal < yLowerBound:
+        if position.xVal < self.xLowerBound or position.yVal < self.yLowerBound:
             return False
         return True
 
@@ -69,23 +71,21 @@ class starSearch():
             self.parent = parent
 
     def findPath(self):
+        self.openList.insert(self.Node(0, self.start, 1, None))  # inserts root node to open list
+        while not self.openList.isEmpty():
+            self.sucessors(self.openList.delete())
 
-
-    def generateFVal(self, currentPosition, newPosition):
-        return self.generateHVal(currentPosition, newPosition) + self.generateGVal(currentPosition, newPosition)
+    def generateFVal(self, node, currentPosition, newPosition):
+        return self.generateHVal(currentPosition, newPosition) + self.generateGVal(node.fVal)
 
     def generateHVal(self, currentPosition, newPosition):
-        return 0
+        return math.sqrt(math.pow((newPosition.xVal - currentPosition.xVal), 2) + math.pow((newPosition.yVal - currentPosition.yVal), 2))
 
-    def generateGVal(self, currentPosition, newPosition):
-        return 0
-
-    def isBarrier(self, position):
-        if :
-            return
+    def generateGVal(self, previousVal):
+        return previousVal + 1
 
     def validPosition(self, position):
-        if grid.withinBounds(position) and position.xVal != 9 and position.yVal != 9:
+        if grid.withinBounds(position) and not grid.isBarrier(position):
             return True
 
     def sucessors(self, node):
@@ -93,7 +93,7 @@ class starSearch():
             for j in range(0, 3):
                 newPosition = coordinate(node.position.xVal + i, node.position.yVal + j)
                 if self.validPosition(newPosition):
-                    self.openList.insert(self.Node(self.generateFVal(node.position, newPosition), newPosition, node.level + 1, node))
+                    self.openList.insert(self.Node(self.generateFVal(node, node.position, newPosition), newPosition, node.level + 1, node))
 
 
 
