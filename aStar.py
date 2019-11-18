@@ -74,7 +74,8 @@ class grid():
             for column in range(self.xLowerBound, self.xUpperBound):
                 self.arr[column][row] = int(line[column])
         mapFile.close()
-        #print(self.arr)
+        for i in self.arr:
+            print(i)
 
     def isBarrier(self, position):
         if self.arr[position.xVal][position.yVal] == 1:
@@ -119,13 +120,23 @@ class starSearch():
         if self.foundGoal is True:
             print("Number of searches: {}".format(searchCount))
 
-    def generateFVal(self, node, newPosition):
-        return self.generateHVal(newPosition) + self.generateGVal(node.gVal)
+    def isDiagonal(self, currentPosition, newPosition):
+        xDiff = currentPosition.xVal - newPosition.xVal
+        yDiff = currentPosition.yVal - newPosition.yVal
+        if xDiff is not 0 and yDiff is not 0:
+            return True
+        else:
+            return False
+
+    def generateFVal(self, node, currentPosition, newPosition):
+        return self.generateHVal(newPosition) + self.generateGVal(node.gVal, self.isDiagonal(currentPosition, newPosition))
 
     def generateHVal(self, newPosition):
         return math.sqrt(math.pow((self.end.xVal - newPosition.xVal), 2) + math.pow((self.end.yVal - newPosition.yVal), 2))
 
-    def generateGVal(self, previousVal):
+    def generateGVal(self, previousVal, diagonal):
+        if diagonal is True:
+            return previousVal + math.sqrt(2)
         return previousVal + 1
 
     def validPosition(self, position):
@@ -155,7 +166,7 @@ class starSearch():
         for i in range(-1, 2):
             for j in range(-1, 2):
                 newPosition = coordinate(node.position.xVal + i, node.position.yVal + j)
-                newNode = self.Node(self.generateFVal(node, newPosition), node.gVal, newPosition, node.level + 1, node)
+                newNode = self.Node(self.generateFVal(node, newPosition, newPosition), node.gVal, newPosition, node.level + 1, node)
                 if self.validPosition(newPosition) and self.unvisited(newNode):
                     self.openList.insert(newNode)
 
@@ -175,7 +186,7 @@ if __name__ == '__main__':
     ol = PriorityQueue()
     cl = HashTable()
     gr = grid(10, 0, 10, 0)
-    searcher = starSearch(ol, cl, coordinate(5, 5), coordinate(8, 3), gr)
+    searcher = starSearch(ol, cl, coordinate(3, 6), coordinate(6, 3), gr)
     searcher.findPath()
     print("Open list size: {}".format(ol.size))
     #print(cl.size)
