@@ -4,19 +4,41 @@ import math
 # use level to determine the nodes position in the array cache
 
 
+class Cache:
+    def __init__(self):
+        self.head = None
+        self.arr = []
+        self.ht = HashTable()
+
+    def buildCache(self, node):
+        self.head = node
+        self.arr = [None] * (node.level + 1)
+        nextNode = node
+        while nextNode is not None:
+            self.arr[nextNode.level] = nextNode
+            self.ht.add(nextNode.position)
+            nextNode = nextNode.parent
+
+    def completeCache(self, otherCache, node):
+        self.buildCache(node)
+        arraySize = len(otherCache.arr) - (len(self.arr) - len(otherCache.arr))
+        for i in range(otherCache.ht.hasKey(node).level, arraySize):
+            self.arr.append(otherCache.arr[i])
+
+
 class HashTable:
 
     def __init__(self):
         self.ht = {}
         self.size = 0
 
-    def add(self, node):
-        self.ht[node.position.xVal + math.sqrt(node.position.yVal)] = node
+    def add(self, position):
+        self.ht[position.xVal + math.sqrt(position.yVal)] = position
         self.size += 1
 
-    def hasKey(self, node):
+    def hasKey(self, position):
         try:
-            return self.ht[node.position.xVal + math.sqrt(node.position.yVal)]
+            return self.ht[position.xVal + math.sqrt(position.yVal)]
         except KeyError:
             return None
 
@@ -145,8 +167,8 @@ class starSearch():
         else:
             return False
         
-    def unvisited(self, node):
-        if self.closedList.hasKey(node) is not None:
+    def unvisited(self, position):
+        if self.closedList.hasKey(position) is not None:
             return False
         else:
             return True
@@ -162,19 +184,22 @@ class starSearch():
         if self.isGoal(node):
             self.foundGoal = True
             return
-        self.closedList.add(node)
+        self.closedList.add(node.position)
         for i in range(-1, 2):
             for j in range(-1, 2):
                 newPosition = coordinate(node.position.xVal + i, node.position.yVal + j)
                 newNode = self.Node(self.generateFVal(node, newPosition, newPosition), node.gVal, newPosition, node.level + 1, node)
-                if self.validPosition(newPosition) and self.unvisited(newNode):
+                if self.validPosition(newPosition) and self.unvisited(newPosition):
                     self.openList.insert(newNode)
 
     def printPath(self, node):
+        arr = [None] * (node.level + 1)
         nextNode = node
         while nextNode is not None:
-            print("({},{})".format(nextNode.position.xVal, nextNode.position.yVal))
+            arr[nextNode.level] = nextNode
             nextNode = nextNode.parent
+        for i in arr:
+            print("({},{})".format(i.position.xVal, i.position.yVal))
 
 
 
