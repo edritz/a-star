@@ -119,10 +119,10 @@ class starSearch():
         if self.foundGoal is True:
             print("Number of searches: {}".format(searchCount))
 
-    def generateFVal(self, node, currentPosition, newPosition):
-        return self.generateHVal(currentPosition, newPosition) + self.generateGVal(node.gVal)
+    def generateFVal(self, node, newPosition):
+        return self.generateHVal(newPosition) + self.generateGVal(node.gVal)
 
-    def generateHVal(self, currentPosition, newPosition):
+    def generateHVal(self, newPosition):
         return math.sqrt(math.pow((self.end.xVal - newPosition.xVal), 2) + math.pow((self.end.yVal - newPosition.yVal), 2))
 
     def generateGVal(self, previousVal):
@@ -155,13 +155,13 @@ class starSearch():
         for i in range(-1, 2):
             for j in range(-1, 2):
                 newPosition = coordinate(node.position.xVal + i, node.position.yVal + j)
-                newNode = self.Node(self.generateFVal(node, node.position, newPosition), node.gVal, newPosition, node.level + 1, node)
+                newNode = self.Node(self.generateFVal(node, newPosition), node.gVal, newPosition, node.level + 1, node)
                 if self.validPosition(newPosition) and self.unvisited(newNode):
                     self.openList.insert(newNode)
 
     def printPath(self, node):
         nextNode = node
-        while nextNode.parent is not None:
+        while nextNode is not None:
             print("({},{})".format(nextNode.position.xVal, nextNode.position.yVal))
             nextNode = nextNode.parent
 
