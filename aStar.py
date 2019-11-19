@@ -22,14 +22,12 @@ class Cache:
         while nextNode is not None:
             self.arr[nextNode.level] = nextNode.position
             self.ht.add(nextNode.position)
-            #print("looping")
             nextNode = nextNode.parent
 
     def completeCache(self, otherCache, node):
         self.buildCache(node)
         startPos = otherCache.findIndex(node.position)
-        arraySize = (len(otherCache.arr) - startPos) + len(self.arr)
-        for i in range(startPos + 1, arraySize - 1):
+        for i in range(startPos + 1, len(otherCache.arr)):
             self.arr.append(otherCache.arr[i])
             self.ht.add(otherCache.arr[i])
         for i in self.arr:
@@ -100,7 +98,7 @@ class grid():
         self.buildMap()
 
     def buildMap(self):
-        mapFile = open("map.txt", 'r')
+        mapFile = open("map1.txt", 'r')
         for row in range(self.yLowerBound, self.yUpperBound):
             line = mapFile.readline()
             for column in range(self.xLowerBound, self.xUpperBound):
@@ -130,6 +128,7 @@ class coordinate():
         if self.xVal is otherCoordinate.xVal and self.yVal is otherCoordinate.yVal:
             return True
         return False
+
 
 class starSearch():
     def __init__(self, openList, closedList, start, end, grid, otherCache):
@@ -251,6 +250,6 @@ if __name__ == '__main__':
     #print("Open list size: {}".format(ol.size))
     ol2 = PriorityQueue()
     cl2 = HashTable()
-    searcher2 = starSearch(PriorityQueue(), HashTable(), coordinate(3, 6), coordinate(6, 3), gr, ch2)
+    searcher2 = starSearch(PriorityQueue(), HashTable(), coordinate(2, 4), coordinate(6, 3), gr, ch2)
     ch3 = searcher2.findPath()
     #print(cl.size)
