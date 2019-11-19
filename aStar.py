@@ -10,20 +10,30 @@ class Cache:
         self.arr = []
         self.ht = HashTable()
 
+    def findIndex(self, position):
+        for i in self.arr:
+            if position.equals(i):
+                return self.arr.index(i)
+
     def buildCache(self, node):
         self.head = node
         self.arr = [None] * (node.level + 1)
         nextNode = node
         while nextNode is not None:
-            self.arr[nextNode.level] = nextNode
+            self.arr[nextNode.level] = nextNode.position
             self.ht.add(nextNode.position)
+            #print("looping")
             nextNode = nextNode.parent
 
     def completeCache(self, otherCache, node):
         self.buildCache(node)
-        arraySize = len(otherCache.arr) - (len(self.arr) - len(otherCache.arr))
-        for i in range(otherCache.ht.hasKey(node).level, arraySize):
+        startPos = otherCache.findIndex(node.position)
+        arraySize = (len(otherCache.arr) - startPos) + len(self.arr)
+        for i in range(startPos + 1, arraySize - 1):
             self.arr.append(otherCache.arr[i])
+            self.ht.add(otherCache.arr[i])
+        for i in self.arr:
+            print("#{} ({}, {})".format(self.arr.index(i), i.xVal, i.yVal))
 
 
 class HashTable:
@@ -116,13 +126,20 @@ class coordinate():
         self.xVal = xVal
         self.yVal = yVal
 
+    def equals(self, otherCoordinate):
+        if self.xVal is otherCoordinate.xVal and self.yVal is otherCoordinate.yVal:
+            return True
+        return False
+
 class starSearch():
-    def __init__(self, openList, closedList, start, end, grid):
+    def __init__(self, openList, closedList, start, end, grid, otherCache):
         self.openList = openList
         self.closedList = closedList
         self.start = start
         self.end = end
         self.grid = grid
+        self.cache = Cache()
+        self.otherCache = otherCache
         self.foundGoal = False
 
     class Node():
@@ -141,6 +158,8 @@ class starSearch():
             self.successors(self.openList.delete())
         if self.foundGoal is True:
             print("Number of searches: {}".format(searchCount))
+            return self.cache
+        return None
 
     def isDiagonal(self, currentPosition, newPosition):
         xDiff = currentPosition.xVal - newPosition.xVal
@@ -175,13 +194,28 @@ class starSearch():
 
     def isGoal(self, node):
         if node.position.xVal is self.end.xVal and node.position.yVal is self.end.yVal:
-            print("Number of moves: {}".format(node.level))
             self.printPath(node)
+            print("Number of moves: {}".format(node.level))
+            print("Building cache")
+            self.cache.buildCache(node)
             return True
         return False
 
+    def foundCache(self, node):
+        if self.otherCache is None:
+            return False
+        elif self.otherCache.ht.hasKey(node.position):
+            print("Completing cache")
+            self.cache.completeCache(self.otherCache, node)
+            return True
+        else:
+            return False
+
     def successors(self, node):
         if self.isGoal(node):
+            self.foundGoal = True
+            return
+        elif self.foundCache(node):
             self.foundGoal = True
             return
         self.closedList.add(node.position)
@@ -199,7 +233,7 @@ class starSearch():
             arr[nextNode.level] = nextNode
             nextNode = nextNode.parent
         for i in arr:
-            print("({},{})".format(i.position.xVal, i.position.yVal))
+            print("#{} ({},{})".format(arr.index(i), i.position.xVal, i.position.yVal))
 
 
 
@@ -210,8 +244,13 @@ class starSearch():
 if __name__ == '__main__':
     ol = PriorityQueue()
     cl = HashTable()
+    ch = Cache()
     gr = grid(10, 0, 10, 0)
-    searcher = starSearch(ol, cl, coordinate(3, 6), coordinate(6, 3), gr)
-    searcher.findPath()
-    print("Open list size: {}".format(ol.size))
+    searcher = starSearch(PriorityQueue(), HashTable(), coordinate(3, 6), coordinate(6, 3), gr, ch)
+    ch2 = searcher.findPath()
+    #print("Open list size: {}".format(ol.size))
+    ol2 = PriorityQueue()
+    cl2 = HashTable()
+    searcher2 = starSearch(PriorityQueue(), HashTable(), coordinate(3, 6), coordinate(6, 3), gr, ch2)
+    ch3 = searcher2.findPath()
     #print(cl.size)
