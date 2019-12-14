@@ -89,26 +89,30 @@ class PriorityQueue(object):
 
 class grid():
 
-    def __init__(self, xUpperBound, xLowerBound, yUpperBound, yLowerBound):
+    def __init__(self, xUpperBound, xLowerBound, yUpperBound, yLowerBound, mapname):
         self.xUpperBound = xUpperBound
         self.xLowerBound = xLowerBound
         self.yUpperBound = yUpperBound
         self.yLowerBound = yLowerBound
-        self.arr = [[0 for i in range(xLowerBound, xUpperBound + 1)] for j in range(yLowerBound, yUpperBound + 1)]
+        self.mapname = mapname
+        self.arr = [[0 for i in range(xLowerBound, xUpperBound)] for j in range(yLowerBound, yUpperBound)]
         self.buildMap()
 
     def buildMap(self):
-        mapFile = open("map1.txt", 'r')
+        mapFile = open(self.mapname, 'r')
         for row in range(self.yLowerBound, self.yUpperBound):
             line = mapFile.readline()
             for column in range(self.xLowerBound, self.xUpperBound):
-                self.arr[column][row] = int(line[column])
+                self.arr[row][column] = int(line[column])
         mapFile.close()
         for i in self.arr:
             print(i)
 
     def isBarrier(self, position):
-        if self.arr[position.xVal][position.yVal] == 1:
+        try:
+            if self.arr[position.xVal][position.yVal] == 1:
+                return True
+        except IndexError:
             return True
 
     def withinBounds(self, position):
@@ -241,15 +245,10 @@ class starSearch():
 
 
 if __name__ == '__main__':
-    ol = PriorityQueue()
-    cl = HashTable()
-    ch = Cache()
-    gr = grid(10, 0, 10, 0)
-    searcher = starSearch(PriorityQueue(), HashTable(), coordinate(3, 6), coordinate(6, 3), gr, ch)
+    #gr = grid(10, 0, 10, 0, "map2.txt")
+    searcher = starSearch(PriorityQueue(), HashTable(), coordinate(10, 3), coordinate(3, 5), grid(10, 0, 10, 0, "map2.txt"), Cache())
     ch2 = searcher.findPath()
-    #print("Open list size: {}".format(ol.size))
-    ol2 = PriorityQueue()
-    cl2 = HashTable()
-    searcher2 = starSearch(PriorityQueue(), HashTable(), coordinate(2, 4), coordinate(6, 3), gr, ch2)
+    searcher2 = starSearch(PriorityQueue(), HashTable(), coordinate(10, 1), coordinate(3, 5), grid(10, 0, 10, 0, "map2.txt"), ch2)
     ch3 = searcher2.findPath()
-    #print(cl.size)
+    searcher3 = starSearch(PriorityQueue(), HashTable(), coordinate(10, 7), coordinate(3, 5), grid(10, 0, 10, 0, "map2.txt"), ch2)
+    searcher3.findPath()
