@@ -239,16 +239,87 @@ class starSearch():
             print("#{} ({},{})".format(arr.index(i), i.position.xVal, i.position.yVal))
 
 
+def tExample():
+    gr = grid(10, 0, 10, 0, "map2.txt")
+    searcher = starSearch(PriorityQueue(), HashTable(), coordinate(10, 3), coordinate(3, 5), gr, Cache())
+    ch2 = searcher.findPath()
+    searcher2 = starSearch(PriorityQueue(), HashTable(), coordinate(10, 1), coordinate(3, 5), gr, ch2)
+    searcher2.findPath()
+    searcher3 = starSearch(PriorityQueue(), HashTable(), coordinate(10, 7), coordinate(3, 5), gr, ch2)
+    searcher3.findPath()
 
 
+def crossExample():
+    gr = grid(10, 0, 10, 0, "map1.txt")
+    searcher = starSearch(PriorityQueue(), HashTable(), coordinate(3, 6), coordinate(6, 3), gr, Cache())
+    ch2 = searcher.findPath()
+    searcher2 = starSearch(PriorityQueue(), HashTable(), coordinate(2, 6), coordinate(6, 3), gr, ch2)
+    searcher2.findPath()
+    searcher3 = starSearch(PriorityQueue(), HashTable(), coordinate(2, 4), coordinate(6, 3), gr, ch2)
+    searcher3.findPath()
 
+
+def complexExample():
+    gr = grid(10, 0, 10, 0, "map3.txt")
+    searcher = starSearch(PriorityQueue(), HashTable(), coordinate(10, 2), coordinate(3, 7), gr, Cache())
+    ch2 = searcher.findPath()
+    searcher2 = starSearch(PriorityQueue(), HashTable(), coordinate(4, 0), coordinate(3, 7), gr, ch2)
+    searcher2.findPath()
+    searcher3 = starSearch(PriorityQueue(), HashTable(), coordinate(7, 7), coordinate(3, 7), gr, ch2)
+    searcher3.findPath()
+
+def gridChoice():
+    while True:
+        print("1. Cross Grid\n2. T Grid\n3. Complex Grid\n")
+        choice = int(input("Choose which grid to use"))
+        if choice is 1:
+            return grid(10, 0, 10, 0, "map1.txt")
+        elif choice is 2:
+            return grid(10, 0, 10, 0, "map2.txt")
+        elif choice is 3:
+            return grid(10, 0, 10, 0, "map3.txt")
+        else:
+            print("error: please choose a number between 1 and 3")
+
+
+def coordinateChooser(num):
+    if num is -1:
+        xval = int(input("Enter an x value for the endpoint: "))
+        yval = int(input("Enter an y value for the endpoint: "))
+        return coordinate(xval, yval)
+    xval = int(input("Enter an x value for path {}: ".format(num)))
+    yval = int(input("Enter an y value for path {}: ".format(num)))
+    return coordinate(xval, yval)
+
+
+def customExample():
+    gr = gridChoice()
+    path_num = int(input("Enter the number of paths you want to search: "))
+    if path_num <= 0:
+        return
+    endpoint = coordinateChooser(-1)
+    starter = starSearch(PriorityQueue(), HashTable(), coordinateChooser(1), endpoint, gr, Cache())
+    startCache = starter.findPath()
+    for i in range(2, path_num + 1):
+        tmp = starSearch(PriorityQueue(), HashTable(), coordinateChooser(i), endpoint, gr, startCache)
+        tmp.findPath()
 
 
 if __name__ == '__main__':
-    #gr = grid(10, 0, 10, 0, "map2.txt")
-    searcher = starSearch(PriorityQueue(), HashTable(), coordinate(10, 3), coordinate(3, 5), grid(10, 0, 10, 0, "map2.txt"), Cache())
-    ch2 = searcher.findPath()
-    searcher2 = starSearch(PriorityQueue(), HashTable(), coordinate(10, 1), coordinate(3, 5), grid(10, 0, 10, 0, "map2.txt"), ch2)
-    ch3 = searcher2.findPath()
-    searcher3 = starSearch(PriorityQueue(), HashTable(), coordinate(10, 7), coordinate(3, 5), grid(10, 0, 10, 0, "map2.txt"), ch2)
-    searcher3.findPath()
+    while True:
+        print("1. Cross Demo\n2. T Demo\n3. Complex Demo\n4. Custom Demo")
+        choice = int(input("Choose which demo to run(1-4): "))
+        if choice is 1:
+            crossExample()
+            break
+        elif choice is 2:
+            tExample()
+            break
+        elif choice is 3:
+            complexExample()
+            break
+        elif choice is 4:
+            customExample()
+            break
+        else:
+            print("error: please choose a number between 1 and 3")
